@@ -58,10 +58,25 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Burger mobile */}
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-dark-800">
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* Mobile : panier + burger */}
+          <div className="flex items-center gap-4 md:hidden">
+            {/* Bouton panier mobile avec badge */}
+            <button
+              onClick={() => setCartOpen(true)}
+              className="relative text-dark-800 hover:text-gold-500 transition-colors"
+            >
+              <ShoppingCart size={24} />
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-gold-400 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                  {itemCount}
+                </span>
+              )}
+            </button>
+            {/* Burger */}
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-dark-800">
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -89,17 +104,13 @@ export default function Navbar() {
           >
             Contact
           </Link>
+          {/* Bouton panier mobile dans le menu déroulant (optionnel) */}
           <button
             onClick={() => { setCartOpen(true); setMobileMenuOpen(false); }}
             className="flex items-center justify-center gap-2 bg-gold-400 text-white px-4 py-3 rounded-full font-medium text-sm w-full hover:bg-gold-500 transition-colors"
           >
             <ShoppingCart size={16} />
-            <span>Mon panier</span>
-            {itemCount > 0 && (
-              <span className="bg-dark-800 text-gold-400 text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold border border-gold-400">
-                {itemCount}
-              </span>
-            )}
+            <span>Mon panier ({itemCount})</span>
           </button>
         </div>
       )}

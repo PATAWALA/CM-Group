@@ -8,12 +8,12 @@ export default function CartSummary() {
   if (!count) return null;
 
   return (
-    <div className="border-t border-light-300 pt-4 mt-4">
+    <div className="bg-white border-t border-light-300 pt-4 mt-4">
       <div className="flex justify-between text-sm mb-2">
-        <span className="text-muted-400">{count} article{count > 1 ? 's' : ''}</span>
-        <span className="text-muted-400">Total</span>
+        <span className="text-dark-800 font-medium">{count} article{count > 1 ? 's' : ''}</span>
+        <span className="text-dark-800 font-medium">Total</span>
       </div>
-      <p className="text-xl font-bold text-gold-500">{total.toLocaleString()} FCFA</p>
+      <p className="text-2xl font-extrabold text-gold-500">{total.toLocaleString()} FCFA</p>
     </div>
   );
 }

@@ -12,20 +12,23 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
     <AnimatePresence>
       {isOpen && (
         <>
+          {/* Overlay noir opaque à 60% */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
+            animate={{ opacity: 0.6 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="fixed inset-0 bg-black z-40"
           />
+          {/* Panier blanc pur */}
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'tween', duration: 0.3 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-white border-l border-light-300 z-50 p-6 flex flex-col shadow-2xl"
+            className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl border-l border-light-300 z-50 p-6 flex flex-col"
           >
+            {/* En-tête */}
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-dark-800">Mon panier</h2>
               <button onClick={onClose} className="text-muted-400 hover:text-dark-800">
@@ -33,8 +36,9 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
               </button>
             </div>
 
+            {/* Liste des articles */}
             {cart.items.length === 0 ? (
-              <p className="text-muted-400 flex-1 flex items-center justify-center">Votre panier est vide.</p>
+              <p className="text-dark-800 flex-1 flex items-center justify-center">Votre panier est vide.</p>
             ) : (
               <div className="flex-1 overflow-y-auto space-y-4">
                 {cart.items.map(item => (
@@ -48,6 +52,7 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
               </div>
             )}
 
+            {/* Résumé + bouton */}
             <CartSummary />
             <Link
               to="/cart"
