@@ -79,7 +79,7 @@ export default function AddEditProduct() {
   const isEditing = Boolean(id);
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<Category>('real-estate');
-  const { register, handleSubmit, setValue, watch } = useForm<Product>({
+  const { register, handleSubmit, setValue} = useForm<Product>({
     defaultValues: { currency: 'FCFA', details: {} },
   });
 
