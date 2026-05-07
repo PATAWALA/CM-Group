@@ -9,17 +9,17 @@ export interface Product {
   image_url: string;
   description: string;
   details: {
-    // Immobilier
+    type?: string;
     location?: string;
     surface?: number;
     rooms?: number;
-    // Véhicules
     brand?: string;
     model?: string;
     year?: number;
     mileage?: number;
     fuel?: string;
-    // IT & Électronique
+    transmission?: string;
+    never_crashed?: boolean;
     brand_manufacturer?: string;
     specifications?: string;
     warranty?: string;

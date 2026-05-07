@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, ShoppingCart, ExternalLink } from 'lucide-react';
+import { Menu, X, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import CartDrawer from '../cart/CartDrawer';
@@ -11,50 +11,96 @@ export default function Navbar() {
   const itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-navy-900/90 backdrop-blur-md border-b border-navy-700">
+    <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-light-300 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gold-400 rounded-lg flex items-center justify-center">
-              <span className="text-navy-900 font-bold text-sm">CM</span>
+          {/* Logo avec image + texte */}
+          <Link to="/" className="flex items-center gap-3 group">
+            <img
+              src="/images/logo.jpg"
+              alt="CM Group Logo"
+              className="h-10 w-10 rounded-lg object-cover border border-light-300 group-hover:border-gold-400 transition-colors"
+            />
+            <div className="flex flex-col">
+              <span className="text-xl font-extrabold text-dark-800 leading-tight tracking-tight">
+                CM <span className="text-gold-500">Group</span>
+              </span>
+              <span className="text-[10px] text-muted-400 font-medium tracking-widest uppercase leading-none">
+                Sarl
+              </span>
             </div>
-            <span className="text-xl font-semibold text-white">CM Group</span>
           </Link>
 
+          {/* Desktop menu */}
           <div className="hidden md:flex items-center gap-8">
-            <Link to="/catalog" className="text-pro-400 hover:text-gold-400">Catalogue</Link>
-            <Link to="/cart" className="text-pro-400 hover:text-gold-400">Panier</Link>
-            <a
-              href="https://wa.me/c/22954099154"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-gold-400 text-navy-900 px-4 py-2 rounded-full font-medium text-sm hover:bg-gold-500"
+            <Link to="/" className="text-dark-800 hover:text-gold-500 transition-colors font-medium">
+              Accueil
+            </Link>
+            <Link to="/catalog" className="text-dark-800 hover:text-gold-500 transition-colors font-medium">
+              Nos biens
+            </Link>
+            <Link to="/contact" className="text-dark-800 hover:text-gold-500 transition-colors font-medium">
+              Contact
+            </Link>
+
+            {/* Panier avec fond or */}
+            <button
+              onClick={() => setCartOpen(true)}
+              className="relative flex items-center gap-2 bg-gold-400 text-white px-4 py-2 rounded-full font-medium text-sm hover:bg-gold-500 transition-all shadow-sm"
             >
-              WhatsApp <ExternalLink size={14} />
-            </a>
-            <button onClick={() => setCartOpen(true)} className="relative">
-              <ShoppingCart className="text-pro-400 hover:text-gold-400" size={22} />
+              <ShoppingCart size={16} />
+              <span>Mon panier</span>
               {itemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-gold-400 text-navy-900 text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                <span className="absolute -top-2 -right-2 bg-dark-800 text-gold-400 text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold border-2 border-white">
                   {itemCount}
                 </span>
               )}
             </button>
           </div>
 
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-pro-400">
+          {/* Burger mobile */}
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden text-dark-800">
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
+      {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-navy-800 border-t border-navy-700 px-4 pt-2 pb-4 space-y-3">
-          <Link to="/catalog" onClick={() => setMobileMenuOpen(false)} className="block text-pro-400 py-2">Catalogue</Link>
-          <Link to="/cart" onClick={() => setMobileMenuOpen(false)} className="block text-pro-400 py-2">Panier</Link>
-          <a href="https://wa.me/c/22954099154" target="_blank" rel="noopener noreferrer" className="block text-gold-400 py-2">
-            Catalogue WhatsApp
-          </a>
+        <div className="md:hidden bg-white border-t border-light-300 px-4 pt-2 pb-4 space-y-3">
+          <Link
+            to="/"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-dark-800 py-2 font-medium hover:text-gold-500 transition-colors"
+          >
+            Accueil
+          </Link>
+          <Link
+            to="/catalog"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-dark-800 py-2 font-medium hover:text-gold-500 transition-colors"
+          >
+            Nos biens
+          </Link>
+          <Link
+            to="/contact"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-dark-800 py-2 font-medium hover:text-gold-500 transition-colors"
+          >
+            Contact
+          </Link>
+          <button
+            onClick={() => { setCartOpen(true); setMobileMenuOpen(false); }}
+            className="flex items-center justify-center gap-2 bg-gold-400 text-white px-4 py-3 rounded-full font-medium text-sm w-full hover:bg-gold-500 transition-colors"
+          >
+            <ShoppingCart size={16} />
+            <span>Mon panier</span>
+            {itemCount > 0 && (
+              <span className="bg-dark-800 text-gold-400 text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold border border-gold-400">
+                {itemCount}
+              </span>
+            )}
+          </button>
         </div>
       )}
 

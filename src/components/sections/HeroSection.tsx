@@ -1,59 +1,67 @@
 import { motion } from 'framer-motion';
-import { ChevronRight, ExternalLink } from 'lucide-react';
+import { ChevronRight, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
-const fadeInUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-};
-
-const stagger = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.15 } },
-};
 
 export default function HeroSection() {
   return (
-    <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-navy-900 via-navy-800 to-navy-900 opacity-90" />
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <motion.div initial="hidden" animate="visible" variants={stagger}>
-          <motion.span
-            variants={fadeInUp}
-            className="inline-block bg-navy-700/50 text-gold-400 px-4 py-1.5 rounded-full text-sm font-medium mb-6 border border-navy-700"
-          >
-            Votre partenaire multisectoriel au Bénin
-          </motion.span>
+    <section className="relative h-screen flex items-center overflow-hidden">
+      {/* Image de fond */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=2070&auto=format&fit=crop')`,
+        }}
+      />
+      {/* Dégradé latéral */}
+      <div className="absolute inset-0 bg-gradient-to-r from-dark-800/95 via-dark-800/60 to-dark-800/5" />
 
-          <motion.h1 variants={fadeInUp} className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
-            De l’<span className="text-gold-400">immobilier</span> à la
-            <br className="hidden sm:block" />
-            <span className="text-gold-400"> technologie</span>, une seule
-            <br className="hidden sm:block" />
-            adresse d’excellence
-          </motion.h1>
+      {/* Contenu */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-28 pb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          className="max-w-2xl"
+        >
+          {/* Badge */}
+          <span className="inline-block bg-white/10 backdrop-blur-sm text-gold-400 px-4 py-2 rounded-full text-sm font-medium mb-6 border border-gold-400/20">
+            CM Group Sarl – Bénin
+          </span>
 
-          <motion.p variants={fadeInUp} className="max-w-2xl mx-auto text-lg md:text-xl text-pro-400 mb-10">
-            CM Group Sarl centralise tous vos besoins : terrains, véhicules, matériel BTP, équipements informatiques et électroménagers. Qualité, confiance et réactivité.
-          </motion.p>
+          {/* Titre */}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6">
+            De l'immobilier
+            <br />
+            à l'informatique,
+            <br />
+            <span className="text-gold-400">une seule adresse</span>
+            <br />
+            d'excellence.
+          </h1>
 
-          <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 justify-center">
+          {/* Description */}
+          <p className="text-base sm:text-lg text-gray-200 mb-8 max-w-lg leading-relaxed">
+            Terrains, véhicules, équipements informatiques, électroménagers.
+            CM Group centralise vos besoins avec confiance et réactivité.
+          </p>
+
+          {/* Boutons */}
+          <div className="flex flex-col sm:flex-row gap-4">
             <Link
               to="/catalog"
-              className="group inline-flex items-center justify-center gap-2 bg-gold-400 text-navy-900 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gold-500 transition-all hover:scale-105"
+              className="group inline-flex items-center justify-center gap-2 bg-gold-400 text-dark-800 px-8 py-4 rounded-full font-semibold text-base hover:bg-gold-500 transition-all hover:scale-105 shadow-lg shadow-gold-400/25"
             >
-              Voir le catalogue
+              Voir nos biens
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <a
-              href="https://wa.me/c/22954099154"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 border border-pro-400/30 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/5 transition-all"
+            <Link
+              to="/contact"
+              className="inline-flex items-center justify-center gap-2 border border-white/20 text-white px-8 py-4 rounded-full font-semibold text-base hover:bg-white/10 transition-all backdrop-blur-sm"
             >
-              Catalogue WhatsApp <ExternalLink size={18} />
-            </a>
-          </motion.div>
+              <Phone size={18} />
+              Nous contacter
+            </Link>
+          </div>
         </motion.div>
       </div>
     </section>

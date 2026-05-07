@@ -15,14 +15,14 @@ export default function ProductDetailPage() {
     });
   }, [id]);
 
-  if (!product) return <div className="pt-24 text-center">Chargement...</div>;
+  if (!product) return <div className="pt-24 text-center text-dark-800">Chargement...</div>;
 
   return (
-    <div className="pt-24 pb-20 px-4 max-w-4xl mx-auto">
+    <div className="pt-24 pb-20 px-4 max-w-4xl mx-auto bg-white">
       <img src={product.image_url} alt={product.title} className="w-full max-h-96 object-cover rounded-xl mb-8" />
-      <h1 className="text-3xl font-bold mb-4">{product.title}</h1>
-      <p className="text-gold-400 text-2xl font-bold mb-6">{product.price.toLocaleString()} FCFA</p>
-      <p className="text-pro-400 mb-8">{product.description}</p>
+      <h1 className="text-3xl font-bold mb-4 text-dark-800">{product.title}</h1>
+      <p className="text-gold-500 text-2xl font-bold mb-6">{product.price.toLocaleString()} FCFA</p>
+      <p className="text-muted-400 mb-8">{product.description}</p>
       <div className="flex gap-4">
         <AddToCartButton product={product} />
       </div>

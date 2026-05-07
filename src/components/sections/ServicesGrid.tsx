@@ -17,10 +17,10 @@ const fadeInUp = {
 
 export default function ServicesGrid() {
   return (
-    <section className="py-20 bg-pro-800/5">
+    <section className="py-20 bg-light-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionTitle>Nos pôles d’expertise</SectionTitle>
-        <p className="text-pro-400 text-center max-w-xl mx-auto mb-16">
+        <p className="text-muted-400 text-center max-w-xl mx-auto mb-16">
           Quatre secteurs stratégiques pour répondre à tous vos projets.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -34,13 +34,13 @@ export default function ServicesGrid() {
             >
               <Link
                 to={`/catalog?category=${s.category}`}
-                className="block bg-navy-800/60 backdrop-blur-sm border border-navy-700 rounded-2xl p-6 hover:border-gold-400/30 transition-all duration-300 hover:shadow-xl hover:shadow-gold-400/5 h-full"
+                className="block bg-white border border-light-300 rounded-2xl p-6 hover:border-gold-400/50 transition-all duration-300 hover:shadow-xl hover:shadow-gold-400/5 h-full"
               >
                 <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center mb-5 text-white`}>
                   <s.icon className="w-8 h-8" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{s.label}</h3>
-                <p className="text-pro-400 text-sm leading-relaxed">{s.desc}</p>
+                <h3 className="text-xl font-semibold mb-3 text-dark-800">{s.label}</h3>
+                <p className="text-muted-400 text-sm leading-relaxed">{s.desc}</p>
               </Link>
             </motion.div>
           ))}
