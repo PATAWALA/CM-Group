@@ -2,11 +2,9 @@ import { useState } from 'react';
 import { Menu, X, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
-import CartDrawer from '../cart/CartDrawer';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
   const { cart } = useCart();
   const itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -14,7 +12,7 @@ export default function Navbar() {
     <nav className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-light-300 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo avec image + texte */}
+          {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <img
               src="/images/logo.jpg"
@@ -43,9 +41,9 @@ export default function Navbar() {
               Contact
             </Link>
 
-            {/* Panier avec fond or */}
-            <button
-              onClick={() => setCartOpen(true)}
+            {/* Lien vers le panier */}
+            <Link
+              to="/cart"
               className="relative flex items-center gap-2 bg-gold-400 text-white px-4 py-2 rounded-full font-medium text-sm hover:bg-gold-500 transition-all shadow-sm"
             >
               <ShoppingCart size={16} />
@@ -55,24 +53,19 @@ export default function Navbar() {
                   {itemCount}
                 </span>
               )}
-            </button>
+            </Link>
           </div>
 
           {/* Mobile : panier + burger */}
           <div className="flex items-center gap-4 md:hidden">
-            {/* Bouton panier mobile avec badge */}
-            <button
-              onClick={() => setCartOpen(true)}
-              className="relative text-dark-800 hover:text-gold-500 transition-colors"
-            >
+            <Link to="/cart" className="relative text-dark-800 hover:text-gold-500 transition-colors">
               <ShoppingCart size={24} />
               {itemCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-gold-400 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
                   {itemCount}
                 </span>
               )}
-            </button>
-            {/* Burger */}
+            </Link>
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-dark-800">
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -104,18 +97,8 @@ export default function Navbar() {
           >
             Contact
           </Link>
-          {/* Bouton panier mobile dans le menu déroulant (optionnel) */}
-          <button
-            onClick={() => { setCartOpen(true); setMobileMenuOpen(false); }}
-            className="flex items-center justify-center gap-2 bg-gold-400 text-white px-4 py-3 rounded-full font-medium text-sm w-full hover:bg-gold-500 transition-colors"
-          >
-            <ShoppingCart size={16} />
-            <span>Mon panier ({itemCount})</span>
-          </button>
         </div>
       )}
-
-      <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </nav>
   );
 }

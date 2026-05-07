@@ -12,7 +12,7 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Overlay noir opaque à 60% */}
+          {/* Overlay opaque */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.6 }}
@@ -20,7 +20,7 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
             onClick={onClose}
             className="fixed inset-0 bg-black z-40"
           />
-          {/* Panier blanc pur */}
+          {/* Panier */}
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
@@ -31,16 +31,16 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
             {/* En-tête */}
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-dark-800">Mon panier</h2>
-              <button onClick={onClose} className="text-muted-400 hover:text-dark-800">
+              <button onClick={onClose} className="text-muted-400 hover:text-dark-800 transition-colors">
                 <X size={24} />
               </button>
             </div>
 
-            {/* Liste des articles */}
+            {/* Liste des articles avec fond gris clair pour mieux voir */}
             {cart.items.length === 0 ? (
               <p className="text-dark-800 flex-1 flex items-center justify-center">Votre panier est vide.</p>
             ) : (
-              <div className="flex-1 overflow-y-auto space-y-4">
+              <div className="flex-1 overflow-y-auto space-y-4 pr-1">
                 {cart.items.map(item => (
                   <CartItem
                     key={item.id}
@@ -52,12 +52,12 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
               </div>
             )}
 
-            {/* Résumé + bouton */}
+            {/* Résumé */}
             <CartSummary />
             <Link
               to="/cart"
               onClick={onClose}
-              className="block text-center bg-gold-400 text-white py-3 rounded-full font-semibold mt-4 hover:bg-gold-500 transition"
+              className="block text-center bg-gold-400 text-white py-3 rounded-full font-semibold mt-4 hover:bg-gold-500 transition shadow-lg shadow-gold-400/25"
             >
               Voir le panier
             </Link>
