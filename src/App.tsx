@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import AdminLayout from './components/admin/AdminLayout';
+import ScrollToTop from './components/ScrollToTop';
 import HomePage from './pages/HomePage';
 import CategoryProducts from './pages/admin/CategoryProducts';
 import CatalogPage from './pages/CatalogPage';
@@ -20,6 +21,7 @@ export default function App() {
     <AuthProvider>
       <CartProvider>
         <BrowserRouter>
+        <ScrollToTop/>
           <Routes>
             {/* Routes publiques avec Navbar et Footer */}
             <Route
