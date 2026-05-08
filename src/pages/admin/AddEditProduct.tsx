@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { supabase } from '../../lib/supabase';
 import type { Product, Category } from '../../lib/types';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save,X, ImagePlus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 // ========== LISTES DE SÉLECTION ==========
@@ -14,7 +14,6 @@ const categories: { value: Category; label: string }[] = [
   { value: 'electronics', label: 'Électronique & Électroménager' },
 ];
 
-// Marques de véhicules (les plus courantes au Bénin)
 const carBrands = [
   'Toyota', 'Mercedes', 'BMW', 'Audi', 'Honda', 'Hyundai', 'Kia', 'Nissan',
   'Mitsubishi', 'Ford', 'Chevrolet', 'Volkswagen', 'Peugeot', 'Renault',
@@ -22,7 +21,6 @@ const carBrands = [
   'Foton', 'Autre',
 ];
 
-// Marques IT
 const itBrands = [
   'Dell', 'HP', 'Lenovo', 'Cisco', 'Huawei', 'Netgear', 'TP-Link',
   'Asus', 'Acer', 'IBM', 'Intel', 'AMD', 'Kingston', 'Seagate',
@@ -30,48 +28,36 @@ const itBrands = [
   'Autre',
 ];
 
-// Marques électronique / électroménager
 const electronicBrands = [
   'Samsung', 'LG', 'Sony', 'Panasonic', 'Philips', 'Toshiba', 'Midea',
   'Hisense', 'TCL', 'Sharp', 'Whirlpool', 'Bosch', 'Siemens', 'Electrolux',
   'Haier', 'Beko', 'Candy', 'Hoover', 'Rowenta', 'Moulinex', 'Autre',
 ];
 
-// Types immobilier
 const realEstateTypes = [
   'Villa', 'Duplex', 'Appartement', 'Terrain', 'Immeuble', 'Local commercial',
   'Studio', 'Loft', 'Penthouse',
 ];
 
-// Types véhicules
 const vehicleTypes = [
   'Berline', '4x4 / SUV', 'Pick-up', 'Camion', 'Minibus', 'Bus', 'Moto',
   'Tricycle', 'Engin de chantier', 'Tracteur', 'Remorque',
 ];
 
-// Types IT
 const itTypes = [
   'Serveur', 'Switch', 'Routeur', 'Ordinateur de bureau', 'PC Portable',
   'Onduleur', 'Imprimante', 'Scanner', 'Caméra de surveillance',
-  'Point d\'accès WiFi', 'Disque dur externe', 'NAS', 'Logiciel',
+  "Point d'accès WiFi", 'Disque dur externe', 'NAS', 'Logiciel',
 ];
 
-// Types électronique
 const electronicTypes = [
   'TV', 'Climatiseur', 'Réfrigérateur', 'Congélateur', 'Machine à laver',
   'Cuisinière', 'Four', 'Micro-ondes', 'Ventilateur', 'Mixeur',
   'Cafetière', 'Fer à repasser', 'Aspirateur', 'Téléphone', 'Tablette',
 ];
 
-// Transmissions véhicules
-const transmissions = [
-  'Manuelle', 'Automatique', 'CVT', 'Semi-automatique',
-];
-
-// Carburants
-const fuels = [
-  'Essence', 'Diesel', 'Hybride', 'Électrique', 'GPL',
-];
+const transmissions = ['Manuelle', 'Automatique', 'CVT', 'Semi-automatique'];
+const fuels = ['Essence', 'Diesel', 'Hybride', 'Électrique', 'GPL'];
 
 // ========== COMPOSANT ==========
 export default function AddEditProduct() {
@@ -79,27 +65,84 @@ export default function AddEditProduct() {
   const isEditing = Boolean(id);
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<Category>('real-estate');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [currentImageUrl, setCurrentImageUrl] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
+
   const { register, handleSubmit, setValue} = useForm<Product>({
     defaultValues: { currency: 'FCFA', details: {} },
   });
 
+  // Charger les données existantes si édition
   useEffect(() => {
     if (id && supabase) {
-      supabase.from('products').select('*').eq('id', id).single().then(({ data }) => {
-        if (data) {
-          const product = data as Product;
-          Object.entries(product).forEach(([key, value]) => setValue(key as keyof Product, value));
-          if (product.details.never_crashed === undefined && product.details.never_crashed === undefined) {
-            setValue('details.never_crashed', false);
+      supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            const product = data as Product;
+            Object.entries(product).forEach(([key, value]) =>
+              setValue(key as keyof Product, value)
+            );
+            if (product.details.never_crashed === undefined) {
+              setValue('details.never_crashed', false);
+            }
+            setSelectedCategory(product.category);
+            setCurrentImageUrl(product.image_url);
+            setImagePreview(product.image_url);
           }
-          setSelectedCategory(product.category);
-        }
-      });
+        });
     }
   }, [id]);
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+      setCurrentImageUrl(''); // on efface l'ancienne URL
+    }
+  };
+
+  const uploadImage = async (): Promise<string | null> => {
+    if (!imageFile || !supabase) return currentImageUrl || null;
+
+    setUploading(true);
+    const fileName = `${Date.now()}_${imageFile.name.replace(/\s+/g, '_')}`;
+    const { data, error } = await supabase.storage
+      .from('products')
+      .upload(fileName, imageFile, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (error) {
+      alert("Erreur lors de l'upload : " + error.message);
+      setUploading(false);
+      return null;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from('products')
+      .getPublicUrl(data.path);
+
+    setUploading(false);
+    return urlData.publicUrl;
+  };
+
   const onSubmit = async (formData: Product) => {
     if (!supabase) return;
+
+    // Upload de l'image si changement
+    const finalImageUrl = await uploadImage();
+    if (!finalImageUrl) {
+      alert("L'image est requise.");
+      return;
+    }
 
     // Nettoyage des champs vides
     const cleanedDetails: Record<string, unknown> = {};
@@ -110,7 +153,12 @@ export default function AddEditProduct() {
         }
       });
     }
-    const payload = { ...formData, details: cleanedDetails };
+
+    const payload = {
+      ...formData,
+      image_url: finalImageUrl,
+      details: cleanedDetails,
+    };
 
     if (isEditing) {
       await supabase.from('products').update(payload).eq('id', id);
@@ -118,6 +166,12 @@ export default function AddEditProduct() {
       await supabase.from('products').insert(payload);
     }
     navigate('/admin');
+  };
+
+  const clearImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setCurrentImageUrl('');
   };
 
   return (
@@ -130,7 +184,7 @@ export default function AddEditProduct() {
       </h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* ===== ÉTAPE 1 : CATÉGORIE ===== */}
+        {/* ===== CATÉGORIE ===== */}
         <div className="bg-light-100 border border-light-300 rounded-xl p-5">
           <h2 className="font-bold text-dark-800 mb-4">📂 Catégorie du bien</h2>
           <select
@@ -144,7 +198,7 @@ export default function AddEditProduct() {
           </select>
         </div>
 
-        {/* ===== ÉTAPE 2 : INFORMATIONS GÉNÉRALES ===== */}
+        {/* ===== INFORMATIONS GÉNÉRALES ===== */}
         <div className="bg-light-100 border border-light-300 rounded-xl p-5 space-y-4">
           <h2 className="font-bold text-dark-800">📋 Informations générales</h2>
 
@@ -152,7 +206,12 @@ export default function AddEditProduct() {
             <label className="block text-sm font-medium text-dark-800 mb-1">Titre du bien *</label>
             <input
               {...register('title', { required: true })}
-              placeholder="Ex: Villa moderne avec piscine"
+              placeholder={
+                selectedCategory === 'real-estate' ? 'Ex: Villa moderne avec piscine' :
+                selectedCategory === 'vehicle' ? 'Ex: Toyota Hilux 4x4' :
+                selectedCategory === 'it' ? 'Ex: Serveur Dell PowerEdge T40' :
+                'Ex: TV Samsung 55" QLED 4K'
+              }
               className="w-full bg-white border border-light-300 rounded-lg px-4 py-3 text-dark-800"
             />
           </div>
@@ -167,13 +226,38 @@ export default function AddEditProduct() {
             />
           </div>
 
+          {/* ===== IMAGE (UPLOAD) ===== */}
           <div>
-            <label className="block text-sm font-medium text-dark-800 mb-1">URL de l'image *</label>
-            <input
-              {...register('image_url', { required: true })}
-              placeholder="https://images.unsplash.com/photo-..."
-              className="w-full bg-white border border-light-300 rounded-lg px-4 py-3 text-dark-800"
-            />
+            <label className="block text-sm font-medium text-dark-800 mb-1">Image du bien *</label>
+            <div className="flex flex-col gap-3">
+              {(imagePreview || currentImageUrl) ? (
+                <div className="relative w-fit">
+                  <img
+                    src={imagePreview || currentImageUrl}
+                    alt="Aperçu"
+                    className="h-40 w-60 object-cover rounded-lg border border-light-300"
+                  />
+                  <button
+                    type="button"
+                    onClick={clearImage}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-light-300 rounded-lg p-8 text-center text-muted-400">
+                  <ImagePlus size={32} className="mx-auto mb-2" />
+                  <p className="text-sm">Aucune image sélectionnée</p>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="block w-full text-sm text-dark-800 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gold-400 file:text-white hover:file:bg-gold-500"
+              />
+            </div>
           </div>
 
           <div>
@@ -181,13 +265,18 @@ export default function AddEditProduct() {
             <textarea
               rows={3}
               {...register('description')}
-              placeholder="Décrivez le bien en quelques phrases..."
+              placeholder={
+                selectedCategory === 'real-estate' ? 'Décrivez le bien (pièces, environnement, standing...)' :
+                selectedCategory === 'vehicle' ? 'État général, options, historique...' :
+                selectedCategory === 'it' ? 'Utilisation, performance, accessoires...' :
+                'Fonctionnalités, état, compatibilité...'
+              }
               className="w-full bg-white border border-light-300 rounded-lg px-4 py-3 text-dark-800"
             />
           </div>
         </div>
 
-        {/* ===== IMMOBILIER ===== */}
+        {/* ===== CHAMPS SPÉCIFIQUES ===== */}
         {selectedCategory === 'real-estate' && (
           <div className="bg-light-100 border border-light-300 rounded-xl p-5 space-y-4">
             <h2 className="font-bold text-dark-800">🏠 Détails immobiliers</h2>
@@ -219,7 +308,6 @@ export default function AddEditProduct() {
           </div>
         )}
 
-        {/* ===== VÉHICULE ===== */}
         {selectedCategory === 'vehicle' && (
           <div className="bg-light-100 border border-light-300 rounded-xl p-5 space-y-4">
             <h2 className="font-bold text-dark-800">🚗 Détails du véhicule</h2>
@@ -279,7 +367,6 @@ export default function AddEditProduct() {
               </select>
             </div>
 
-            {/* Case "Jamais accidenté" */}
             <div className="flex items-center gap-3 bg-white border border-light-300 rounded-lg p-4">
               <input
                 type="checkbox"
@@ -293,15 +380,16 @@ export default function AddEditProduct() {
           </div>
         )}
 
-        {/* ===== IT ===== */}
-        {selectedCategory === 'it' && (
+        {(selectedCategory === 'it' || selectedCategory === 'electronics') && (
           <div className="bg-light-100 border border-light-300 rounded-xl p-5 space-y-4">
-            <h2 className="font-bold text-dark-800">🖥️ Détails informatiques</h2>
+            <h2 className="font-bold text-dark-800">
+              {selectedCategory === 'it' ? '🖥️ Détails informatiques' : '📺 Détails électronique / électroménager'}
+            </h2>
 
             <div>
               <label className="block text-sm font-medium text-dark-800 mb-1">Type d'équipement</label>
               <select {...register('details.type')} className="w-full bg-white border border-light-300 rounded-lg px-4 py-3 text-dark-800">
-                {itTypes.map((t) => (
+                {(selectedCategory === 'it' ? itTypes : electronicTypes).map((t) => (
                   <option key={t} value={t.toLowerCase()}>{t}</option>
                 ))}
               </select>
@@ -311,7 +399,7 @@ export default function AddEditProduct() {
               <label className="block text-sm font-medium text-dark-800 mb-1">Marque</label>
               <select {...register('details.brand_manufacturer')} className="w-full bg-white border border-light-300 rounded-lg px-4 py-3 text-dark-800">
                 <option value="">Sélectionner</option>
-                {itBrands.map((b) => (
+                {(selectedCategory === 'it' ? itBrands : electronicBrands).map((b) => (
                   <option key={b} value={b}>{b}</option>
                 ))}
               </select>
@@ -319,7 +407,12 @@ export default function AddEditProduct() {
 
             <div>
               <label className="block text-sm font-medium text-dark-800 mb-1">Spécifications techniques</label>
-              <textarea rows={2} {...register('details.specifications')} placeholder="Ex: Intel Xeon, 16Go RAM, 2x 1To HDD" className="w-full bg-white border border-light-300 rounded-lg px-4 py-3 text-dark-800" />
+              <textarea
+                rows={2}
+                {...register('details.specifications')}
+                placeholder={selectedCategory === 'it' ? 'Ex: Intel Xeon, 16Go RAM, 2x 1To HDD' : 'Ex: 55 pouces, QLED, Smart TV, 4K'}
+                className="w-full bg-white border border-light-300 rounded-lg px-4 py-3 text-dark-800"
+              />
             </div>
 
             <div>
@@ -331,61 +424,23 @@ export default function AddEditProduct() {
                 <option value="2 ans">2 ans</option>
                 <option value="3 ans">3 ans</option>
                 <option value="5 ans">5 ans</option>
-                <option value="Garantie à vie">Garantie à vie</option>
+                {selectedCategory === 'it' && <option value="Garantie à vie">Garantie à vie</option>}
               </select>
             </div>
           </div>
         )}
 
-        {/* ===== ÉLECTRONIQUE ===== */}
-        {selectedCategory === 'electronics' && (
-          <div className="bg-light-100 border border-light-300 rounded-xl p-5 space-y-4">
-            <h2 className="font-bold text-dark-800">📺 Détails électronique / électroménager</h2>
-
-            <div>
-              <label className="block text-sm font-medium text-dark-800 mb-1">Type d'appareil</label>
-              <select {...register('details.type')} className="w-full bg-white border border-light-300 rounded-lg px-4 py-3 text-dark-800">
-                {electronicTypes.map((t) => (
-                  <option key={t} value={t.toLowerCase()}>{t}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-dark-800 mb-1">Marque</label>
-              <select {...register('details.brand_manufacturer')} className="w-full bg-white border border-light-300 rounded-lg px-4 py-3 text-dark-800">
-                <option value="">Sélectionner</option>
-                {electronicBrands.map((b) => (
-                  <option key={b} value={b}>{b}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-dark-800 mb-1">Spécifications</label>
-              <textarea rows={2} {...register('details.specifications')} placeholder="Ex: 55 pouces, QLED, Smart TV, 4K" className="w-full bg-white border border-light-300 rounded-lg px-4 py-3 text-dark-800" />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-dark-800 mb-1">Garantie</label>
-              <select {...register('details.warranty')} className="w-full bg-white border border-light-300 rounded-lg px-4 py-3 text-dark-800">
-                <option value="">Sélectionner</option>
-                <option value="6 mois">6 mois</option>
-                <option value="1 an">1 an</option>
-                <option value="2 ans">2 ans</option>
-                <option value="3 ans">3 ans</option>
-                <option value="5 ans">5 ans</option>
-              </select>
-            </div>
-          </div>
-        )}
-
-        {/* ===== BOUTON DE SOUMISSION ===== */}
+        {/* Bouton de soumission */}
         <button
           type="submit"
-          className="flex items-center justify-center gap-2 bg-gold-400 hover:bg-gold-500 text-white w-full py-4 rounded-full font-semibold text-lg transition shadow-lg shadow-gold-400/25"
+          disabled={uploading}
+          className="flex items-center justify-center gap-2 bg-gold-400 hover:bg-gold-500 text-white w-full py-4 rounded-full font-semibold text-lg transition shadow-lg shadow-gold-400/25 disabled:opacity-50"
         >
-          <Save size={20} />
+          {uploading ? (
+            <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
+          ) : (
+            <Save size={20} />
+          )}
           {isEditing ? '💾 Modifier le bien' : '✅ Publier le bien'}
         </button>
       </form>
