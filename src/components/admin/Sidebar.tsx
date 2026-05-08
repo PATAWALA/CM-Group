@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard, Plus, Users, LogOut, ChevronRight,
-  Home, Car, Monitor, ShoppingBag, Menu, X
+  Home, Car, Monitor, ShoppingBag, Menu, X, Globe
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -34,6 +34,11 @@ export default function Sidebar() {
 
   const handleSignOut = async () => {
     await signOut();
+    navigate('/');
+  };
+
+  const handleGoToSite = () => {
+    if (isMobile) setIsOpen(false);
     navigate('/');
   };
 
@@ -99,12 +104,23 @@ export default function Sidebar() {
             <p className="text-xs text-gold-400">Admin</p>
           </div>
         </div>
+
+        {/* Bouton Voir le site (sans déconnexion) */}
+        <button
+          onClick={handleGoToSite}
+          className="flex items-center gap-2 w-full px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-all"
+        >
+          <Globe size={18} />
+          Voir le site
+        </button>
+
+        {/* Déconnexion */}
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-2 w-full px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:bg-red-500/10 hover:text-red-400 transition-all"
+          className="flex items-center gap-2 w-full px-4 py-2.5 rounded-xl text-sm text-red-400 hover:bg-red-500/10 hover:text-red-400 transition-all"
         >
           <LogOut size={18} />
-          Voir le site
+          Déconnexion
         </button>
       </div>
     </div>
