@@ -20,6 +20,8 @@ import {
   ShoppingCart,
   CreditCard,
   Check,
+  X,
+  ZoomIn,
 } from 'lucide-react';
 
 const categoryLabels: Record<string, string> = {
@@ -34,6 +36,7 @@ export default function ProductDetailPage() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imageOpen, setImageOpen] = useState(false);
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -90,14 +93,43 @@ export default function ProductDetailPage() {
         </Link>
 
         <div className="grid lg:grid-cols-2 gap-10">
-          {/* Image */}
-          <div className="rounded-2xl overflow-hidden border border-light-300 bg-light-100">
+          {/* Image avec bouton zoom et modal */}
+          <div className="relative rounded-2xl overflow-hidden border border-light-300 bg-light-100 group">
             <img
               src={product.image_url}
               alt={product.title}
-              className="w-full h-[400px] object-cover hover:scale-105 transition-transform duration-500"
+              className="w-full h-[400px] object-cover cursor-pointer transition-transform duration-500 group-hover:scale-105"
+              onClick={() => setImageOpen(true)}
             />
+            <button
+              onClick={() => setImageOpen(true)}
+              className="absolute bottom-3 right-3 bg-white/80 backdrop-blur-sm rounded-full p-2.5 shadow-lg hover:bg-white transition"
+              title="Voir en grand"
+            >
+              <ZoomIn size={18} className="text-dark-800" />
+            </button>
           </div>
+
+          {/* MODAL IMAGE PLEIN ÉCRAN */}
+          {imageOpen && (
+            <div
+              className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+              onClick={() => setImageOpen(false)}
+            >
+              <button
+                onClick={() => setImageOpen(false)}
+                className="absolute top-4 right-4 bg-white/10 backdrop-blur-sm rounded-full p-3 hover:bg-white/20 transition"
+              >
+                <X size={24} className="text-white" />
+              </button>
+              <img
+                src={product.image_url}
+                alt={product.title}
+                className="max-w-full max-h-[90vh] object-contain rounded-xl"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          )}
 
           {/* Infos principales */}
           <div>
