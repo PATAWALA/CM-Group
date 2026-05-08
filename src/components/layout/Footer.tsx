@@ -20,9 +20,10 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">Navigation</h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/catalog" className="text-muted-300 hover:text-gold-400">Catalogue</Link></li>
-              <li><Link to="/cart" className="text-muted-300 hover:text-gold-400">Panier</Link></li>
-              <li><a href="https://wa.me/c/22954099154" target="_blank" rel="noopener noreferrer" className="text-muted-300 hover:text-gold-400">Catalogue WhatsApp</a></li>
+              <li><Link to="/" className="text-muted-300 hover:text-gold-400">Accueil</Link></li>
+              <li><Link to="/catalog" className="text-muted-300 hover:text-gold-400">Nos biens</Link></li>
+              <li><Link to="/contact" className="text-muted-300 hover:text-gold-400">Contact</Link></li>
+              <li><Link to="/cart" className="text-muted-300 hover:text-gold-400">Mon panier</Link></li>
             </ul>
           </div>
           <div>

@@ -34,7 +34,7 @@ export default function Sidebar() {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/admin/login');
+    navigate('/');
   };
 
   const SidebarContent = () => (
@@ -104,7 +104,7 @@ export default function Sidebar() {
           className="flex items-center gap-2 w-full px-4 py-2.5 rounded-xl text-sm text-gray-300 hover:bg-red-500/10 hover:text-red-400 transition-all"
         >
           <LogOut size={18} />
-          Déconnexion
+          Voir le site
         </button>
       </div>
     </div>
